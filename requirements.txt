@@ -1,3 +1,4 @@
+accelerate
 opencv-python
 matplotlib
 flash_attn==2.7.4.post1
