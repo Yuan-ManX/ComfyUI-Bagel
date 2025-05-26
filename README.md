@@ -18,8 +18,17 @@ git clone https://github.com/Yuan-ManX/ComfyUI-Bagel.git
 ```
 cd ComfyUI-Bagel
 pip install -r requirements.txt
+pip install --no-build-isolation flash-attn
 ```
-
 
 ## Model
 
+Download models from [ByteDance-Seed/BAGEL-7B-MoT](https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT)
+
+
+
+## Workflow
+1. Download [workflow](https://github.com/Xiuzhenpeng/ComfyUI-Bagel/blob/main/workflow/Bagel.json) and Load in ComfyUI
+
+2. Change the path in node named "Load BAGEL Model" to your folder global path
+   ![Example Image](images/Replace_path.png)
