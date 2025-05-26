@@ -145,8 +145,7 @@ class Prompt:
         return {
             "required": {
                 "text": ("STRING", {
-                    "default": "a car made of small cars",
-                    "multiline": True
+                    "model_path": ("STRING", {"default": "./BAGEL-7B-MoT"}),
                 }),
             }
         }
@@ -160,6 +159,25 @@ class Prompt:
         prompt = text
         return (prompt,)
 
+
+class LoadEditImage:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image_path": ("STRING", {"default": "test_images/women.jpg"}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "input_image"
+    CATEGORY = "BAGEL"
+
+    def input_image(self, image_path):
+        image = image_path
+        return (image,)
+        
 
 class ImageGeneration:
     @classmethod
