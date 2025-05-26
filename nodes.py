@@ -448,3 +448,59 @@ class ImageThinkEditing:
                     
         return (image,)
 
+
+class ImageUnderstanding:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "vae_model": ("VAEMODEL",),
+                "tokenizer": ("TOKENIZER",),
+                "vae_transform": ("VAETRANSFORM",),
+                "vit_transform": ("VITTRANSFORM",),
+                "new_token_ids": ("TOKENIDS",),
+                "prompt": ("PROMPT",),
+                "image": ("IMAGE",),
+                "seed": ("INT", {"default": 42}),
+                "max_think_token_n": ("INT", {"default": 1000}),
+            }
+        }
+
+    RETURN_TYPES = ("TEXT",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "editing"
+    CATEGORY = "BAGEL"
+
+    def editing(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
+                image, seed, max_think_token_n):
+
+        inferencer = InterleaveInferencer(
+            model=model, 
+            vae_model=vae_model, 
+            tokenizer=tokenizer, 
+            vae_transform=vae_transform, 
+            vit_transform=vit_transform, 
+            new_token_ids=new_token_ids
+        )
+
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+        inference_hyper=dict(
+            max_think_token_n=1000,
+            do_sample=False,
+            # text_temperature=0.3,
+        )
+
+        output_dict = inferencer(image=image, text=prompt, understanding_output=True, **inference_hyper)
+        text = output_dict['text']
+                    
+        return (text,)
+
