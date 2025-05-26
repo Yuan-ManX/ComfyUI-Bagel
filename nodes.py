@@ -19,6 +19,7 @@ import numpy as np
 
 from PIL import Image
 import torch
+from torchvision import transforms
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from safetensors.torch import load_file
 
@@ -219,5 +220,12 @@ class ImageGeneration:
 
         output_dict = inferencer(text=prompt, **inference_hyper)
         image = output_dict['image']
-                    
-        return (image,)
+
+        to_tensor = transforms.ToTensor()
+        tensor_image = to_tensor(image)
+        
+        # translate [C, H, w] to [H, w, C]
+        np_image = tensor_image.permute(1, 2, 0)
+        tensor_image = np_image.unsqueeze(0)
+
+        return (tensor_image,)
