@@ -272,8 +272,8 @@ class ImageThinkGeneration:
             }
         }
 
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
+    RETURN_TYPES = ("IMAGE", "TEXT",)
+    RETURN_NAMES = ("image", "text",)
     FUNCTION = "generate"
     CATEGORY = "BAGEL"
 
@@ -313,8 +313,9 @@ class ImageThinkGeneration:
         
         output_dict = inferencer(text=prompt, think=True, **inference_hyper)
         image = output_dict['image']
+        text = output_dict['text']
                     
-        return (image,)
+        return (image, text)
 
 
 class ImageEditing:
@@ -404,8 +405,8 @@ class ImageThinkEditing:
             }
         }
 
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
+    RETURN_TYPES = ("IMAGE", "TEXT",)
+    RETURN_NAMES = ("image", "text",)
     FUNCTION = "editing"
     CATEGORY = "BAGEL"
 
@@ -445,8 +446,9 @@ class ImageThinkEditing:
 
         output_dict = inferencer(image=image, text=prompt, think=True, **inference_hyper)
         image = output_dict['image']
+        text = output_dict['text']
                     
-        return (image,)
+        return (image, text)
 
 
 class ImageUnderstanding:
@@ -469,10 +471,10 @@ class ImageUnderstanding:
 
     RETURN_TYPES = ("TEXT",)
     RETURN_NAMES = ("text",)
-    FUNCTION = "editing"
+    FUNCTION = "understanding"
     CATEGORY = "BAGEL"
 
-    def editing(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
+    def understanding(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
                 image, seed, max_think_token_n):
 
         inferencer = InterleaveInferencer(
