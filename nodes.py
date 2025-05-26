@@ -229,3 +229,70 @@ class ImageGeneration:
         tensor_image = np_image.unsqueeze(0)
 
         return (tensor_image,)
+
+
+class ImageThinkGeneration:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "vae_model": ("VAEMODEL",),
+                "tokenizer": ("TOKENIZER",),
+                "vae_transform": ("VAETRANSFORM",),
+                "vit_transform": ("VITTRANSFORM",),
+                "new_token_ids": ("TOKENIDS",),
+                "prompt": ("PROMPT",),
+                "seed": ("INT", {"default": 42}),
+                "max_think_token_n": ("INT", {"default": 1000}),
+                "cfg_text_scale": ("FLOAT", {"default": 4.0}),
+                "cfg_img_scale": ("FLOAT", {"default": 1.0}),
+                "timestep_shift": ("FLOAT", {"default": 3.0}),
+                "num_timesteps": ("INT", {"default": 50}),
+                "cfg_renorm_min": ("FLOAT", {"default": 1.0}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "generate"
+    CATEGORY = "BAGEL"
+
+    def generate(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
+                seed, max_think_token_n, cfg_text_scale, cfg_img_scale, timestep_shift, num_timesteps, cfg_renorm_min):
+
+        inferencer = InterleaveInferencer(
+            model=model, 
+            vae_model=vae_model, 
+            tokenizer=tokenizer, 
+            vae_transform=vae_transform, 
+            vit_transform=vit_transform, 
+            new_token_ids=new_token_ids
+        )
+
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+        inference_hyper=dict(
+            max_think_token_n=max_think_token_n,
+            do_sample=False,
+            # text_temperature=0.3,
+            cfg_text_scale=cfg_text_scale,
+            cfg_img_scale=cfg_img_scale,
+            cfg_interval=[0.4, 1.0],
+            timestep_shift=timestep_shift,
+            num_timesteps=num_timesteps,
+            cfg_renorm_min=cfg_renorm_min,
+            cfg_renorm_type="global",
+        )
+        
+        output_dict = inferencer(text=prompt, think=True, **inference_hyper)
+        image = output_dict['image']
+                    
+        return (image,)
