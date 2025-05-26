@@ -145,11 +145,12 @@ class Prompt:
         return {
             "required": {
                 "text": ("STRING", {
-                    "model_path": ("STRING", {"default": "./BAGEL-7B-MoT"}),
+                    "default": "a car made of small cars",
+                    "multiline": True
                 }),
             }
         }
-
+        
     RETURN_TYPES = ("PROMPT",)
     RETURN_NAMES = ("prompt",)
     FUNCTION = "input_text"
